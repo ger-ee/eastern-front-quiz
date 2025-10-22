@@ -1,141 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Eastern Front WWII Quiz</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #f0f0f0;
-    padding: 20px;
-    line-height: 1.6;
+  :root{
+    --bg1:#0f0f12; --bg2:#191a1f; --accent:#ff5544; --muted:#a9a9b2; --ok:#25a45a; --bad:#c83838;
   }
-  .quiz-container {
-    max-width: 700px;
-    margin: 0 auto;
-    background: #1e1e1e;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(255,255,255,0.1);
+  @keyframes float {
+    0%{transform:translateY(0)} 50%{transform:translateY(-6px)} 100%{transform:translateY(0)}
   }
-  h1 {
-    text-align: center;
-    color: #ff5555;
-  }
-  .question {
-    margin-bottom: 20px;
-  }
-  .answers button {
-    display: block;
-    width: 100%;
-    margin: 8px 0;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    background: #2c2c2c;
-    color: #f0f0f0;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  .answers button:hover {
-    background: #3a3a3a;
-  }
-  .correct {
-    background-color: #228b22 !important;
-  }
-  .wrong {
-    background-color: #b22222 !important;
-  }
-  #next-btn {
-    background: #ff5555;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    display: none;
-    margin-top: 20px;
-  }
-  #result {
-    text-align: center;
-    font-size: 1.2em;
-    margin-top: 20px;
-  }
+  body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#f5f6f8; background: radial-gradient(1200px 700px at 20% -10%, #2b2d33 0%, transparent 70%),
+           radial-gradient(900px 600px at 120% 10%, #2a1a1a55 0%, transparent 70%),
+           linear-gradient(160deg, var(--bg1), var(--bg2));
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .quiz{width: min(860px, 92vw); background: #121317e6; backdrop-filter: blur(6px);
+        border:1px solid #2b2d33; border-radius: 16px; box-shadow: 0 12px 40px #0008; overflow:hidden}
+  header{padding:18px 22px; border-bottom:1px solid #24262c; display:flex; gap:14px; align-items:center}
+  .logo{width:12px; height:12px; border-radius:2px; background:var(--accent); box-shadow:0 0 24px var(--accent)}
+  header h1{font-size:18px; margin:0; letter-spacing:.3px}
+  .muted{color:var(--muted)}
+  .progress{height:8px; background:#1b1c22;}
+  .bar{height:100%; width:0%; background:linear-gradient(90deg, #ff7a66, var(--accent)); transition: width .35s ease}
+  main{padding:24px;}
+  .card{padding:22px; border:1px solid #262830; border-radius:14px; background:#161821; animation: float 6s ease-in-out infinite}
+  .q{font-size:20px; line-height:1.4; margin:0 0 16px}
+  .answers{display:grid; gap:10px}
+  .btn{padding:12px 14px; text-align:left; border:1px solid #2a2d36; background:#1a1d26; color:#e8e9ec; border-radius:12px; cursor:pointer; transition:transform .05s ease, background .2s ease, border-color .2s}
+  .btn:hover{background:#222533}
+  .btn:active{transform:scale(.995)}
+  .btn[disabled]{opacity:.7; cursor:default}
+  .btn.correct{background: #0f2a1a; border-color:#206a3b; color:#c9f3db}
+  .btn.wrong{background:#2a1414; border-color:#8e3030; color:#ffd6d6}
+  .feedback{margin:12px 2px 0; min-height:24px; font-weight:600}
+  .actions{display:flex; gap:12px; margin-top:18px}
+  .next{background:var(--accent); color:white; border:none; padding:12px 16px; border-radius:12px; cursor:pointer; display:none}
+  .chip{font-size:12px; color:var(--muted); border:1px solid #2b2d33; padding:6px 10px; border-radius:999px}
+  .footer{padding:18px 22px; border-top:1px solid #24262c; display:flex; justify-content:space-between; align-items:center}
+  .score{font-weight:700}
 </style>
 </head>
 <body>
-<div class="quiz-container">
-  <h1>Eastern Front WWII Quiz</h1>
-  <div id="quiz"></div>
-  <button id="next-btn">Next Question</button>
-  <div id="result"></div>
-</div>
+  <div class="quiz" id="app">
+    <header>
+      <div class="logo"></div>
+      <h1>Eastern Front — Interactive Quiz</h1>
+      <div style="flex:1"></div>
+      <div class="chip" id="counter">Question 1/15</div>
+    </header>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <main>
+      <div class="card">
+        <p class="q" id="question">Loading…</p>
+        <div class="answers" id="answers"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="actions"><button class="next" id="next">Next</button></div>
+      </div>
+    </main>
+    <div class="footer"><span class="muted">Shuffles each time you refresh</span><span class="score" id="score">0 correct</span></div>
+  </div>
+
 <script>
-const quizData = [
-  {q: "What was Operation Barbarossa?", a: ["The Soviet invasion of Poland", "The German invasion of the Soviet Union", "The Allied invasion of France", "The Soviet counteroffensive at Stalingrad"], c: 1},
-  {q: "Which city endured a 900-day siege by German forces?", a: ["Stalingrad", "Leningrad", "Moscow", "Kiev"], c: 1},
-  {q: "Who commanded the German Army Group Center during the initial phase of Operation Barbarossa?", a: ["Guderian", "Paulus", "Bock", "Rommel"], c: 2},
-  {q: "When did Operation Barbarossa begin?", a: ["June 22, 1941", "September 1, 1939", "December 7, 1941", "May 10, 1940"], c: 0},
-  {q: "What was the turning point battle on the Eastern Front?", a: ["Moscow", "Kursk", "Stalingrad", "Smolensk"], c: 2},
-  {q: "Which Soviet general led the defense and later counteroffensive at Stalingrad?", a: ["Rokossovsky", "Chuikov", "Zhukov", "Timoshenko"], c: 1},
-  {q: "What was the name of the massive German tank offensive repelled by the Soviets in 1943?", a: ["Operation Bagration", "Operation Citadel", "Operation Typhoon", "Operation Blue"], c: 1},
-  {q: "Which operation liberated Belarus in 1944?", a: ["Operation Typhoon", "Operation Overlord", "Operation Bagration", "Operation Torch"], c: 2},
-  {q: "What city was renamed Volgograd after the war?", a: ["Leningrad", "Kursk", "Stalingrad", "Kharkov"], c: 2},
-  {q: "Which conference solidified postwar Soviet control over Eastern Europe?", a: ["Tehran", "Yalta", "Potsdam", "Moscow"], c: 1}
+// --- Question pool (>=15). Answers are shuffled on render; questions shuffled on load.
+const POOL = [
+  {q:"What was Operation Barbarossa?", a:["The Soviet invasion of Poland","The German invasion of the Soviet Union","The Allied invasion of France","The Soviet counteroffensive at Stalingrad"], c:1},
+  {q:"Which city endured a ~900‑day siege?", a:["Stalingrad","Leningrad","Moscow","Kiev"], c:1},
+  {q:"Who commanded German Army Group Center at the start of Barbarossa?", a:["Heinz Guderian","Fedor von Bock","Erich von Manstein","Erwin Rommel"], c:1},
+  {q:"When did Barbarossa begin?", a:["June 22, 1941","Sept 1, 1939","Dec 7, 1941","May 10, 1940"], c:0},
+  {q:"Turning point widely identified on the Eastern Front?", a:["Moscow","Kursk","Stalingrad","Smolensk"], c:2},
+  {q:"Soviet general famed for street‑by‑street defense of Stalingrad?", a:["Vasily Chuikov","Georgy Zhukov","Konstantin Rokossovsky","Semyon Timoshenko"], c:0},
+  {q:"Name of the 1943 German offensive at Kursk?", a:["Operation Citadel","Operation Typhoon","Operation Blue","Operation Bagration"], c:0},
+  {q:"Which operation liberated Belarus in 1944?", a:["Overlord","Typhoon","Torch","Bagration"], c:3},
+  {q:"Which city was renamed Volgograd after the war?", a:["Leningrad","Kursk","Stalingrad","Kharkov"], c:2},
+  {q:"Which conference most shaped postwar Soviet influence in Eastern Europe?", a:["Tehran","Yalta","Potsdam","Moscow 1944"], c:1},
+  {q:"German plan to capture Moscow in 1941 was called…", a:["Operation Typhoon","Operation Sea Lion","Operation Uranus","Operation Mars"], c:0},
+  {q:"Soviet encirclement that trapped the German 6th Army was…", a:["Operation Uranus","Operation Mars","Operation Saturn","Operation Torch"], c:0},
+  {q:"Largest tank clashes near Prokhorovka occurred during…", a:["Operation Citadel","Operation Blue","Operation Typhoon","Operation Market Garden"], c:0},
+  {q:"Order No. 227 (‘Not one step back!’) was issued in…", a:["1941","1942","1943","1944"], c:1},
+  {q:"Lend‑Lease item most critical to Soviet mobility was…", a:["Tanks","Rifles","Trucks","Submarines"], c:2}
 ];
 
-let current = 0;
-let score = 0;
-const quiz = document.getElementById('quiz');
-const nextBtn = document.getElementById('next-btn');
-const result = document.getElementById('result');
+const TOTAL = 15; // number of questions to ask
 
-function loadQuestion() {
-  result.innerHTML = '';
-  nextBtn.style.display = 'none';
-  const q = quizData[current];
-  quiz.innerHTML = `<div class='question'><h3>${q.q}</h3></div>`;
-  const answersDiv = document.createElement('div');
-  answersDiv.className = 'answers';
-  q.a.forEach((answer, i) => {
-    const btn = document.createElement('button');
-    btn.textContent = answer;
-    btn.onclick = () => selectAnswer(i, btn);
-    answersDiv.appendChild(btn);
-  });
-  quiz.appendChild(answersDiv);
-}
+// Utilities
+const shuffle = (arr) => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
 
-function selectAnswer(selected, btn) {
-  const correct = quizData[current].c;
-  const buttons = document.querySelectorAll('.answers button');
-  buttons.forEach(b => b.disabled = true);
-  if (selected === correct) {
-    btn.classList.add('correct');
-    result.textContent = '✅ Correct!';
-    score++;
-  } else {
-    btn.classList.add('wrong');
-    buttons[correct].classList.add('correct');
-    result.textContent = '❌ Wrong.';
-  }
-  nextBtn.style.display = 'block';
-}
+// Prepare quiz: shuffle questions on each load
+let questions = shuffle([...POOL]).slice(0, TOTAL);
+let current = 0, score = 0;
 
-nextBtn.onclick = () => {
-  current++;
-  if (current < quizData.length) {
-    loadQuestion();
-  } else {
-    quiz.innerHTML = `<h3>You scored ${score} / ${quizData.length}</h3>`;
-    nextBtn.style.display = 'none';
-    result.textContent = '';
-  }
+const els = {
+  q: document.getElementById('question'),
+  a: document.getElementById('answers'),
+  fb: document.getElementById('feedback'),
+  bar: document.getElementById('bar'),
+  next: document.getElementById('next'),
+  counter: document.getElementById('counter'),
+  score: document.getElementById('score')
 };
 
-loadQuestion();
+function render(){
+  els.fb.textContent='';
+  els.next.style.display='none';
+  const {q, a, c} = questions[current];
+  els.q.textContent = q;
+  els.a.innerHTML='';
+  const order = shuffle(a.map((text, i)=>({text, i})));
+  order.forEach(({text, i})=>{
+    const btn = document.createElement('button');
+    btn.className='btn';
+    btn.textContent = text;
+    btn.onclick = () => select(i, btn);
+    els.a.appendChild(btn);
+  });
+  els.counter.textContent = `Question ${current+1}/${TOTAL}`;
+  els.bar.style.width = `${(current)/TOTAL*100}%`;
+}
+
+function select(selectedIndex, clicked){
+  const correct = questions[current].c;
+  const buttons = Array.from(document.querySelectorAll('.btn'));
+  buttons.forEach(b=>b.disabled=true);
+  if(selectedIndex===correct){
+    clicked.classList.add('correct');
+    els.fb.textContent = 'Correct';
+    score++;
+  } else {
+    clicked.classList.add('wrong');
+    // highlight the correct one by matching original index
+    const correctBtn = buttons.find(b=> b.textContent === questions[current].a[correct]);
+    if(correctBtn) correctBtn.classList.add('correct');
+    els.fb.textContent = 'Wrong';
+  }
+  els.next.style.display='inline-block';
+  els.score.textContent = `${score} correct`;
+  els.bar.style.width = `${(current+1)/TOTAL*100}%`;
+}
+
+els.next.addEventListener('click', ()=>{
+  current++;
+  if(current < TOTAL){
+    render();
+  } else {
+    end();
+  }
+});
+
+function end(){
+  const pct = Math.round((score/TOTAL)*100);
+  document.querySelector('main').innerHTML = `
+    <div class="card">
+      <h2 style="margin:0 0 8px">Finished!</h2>
+      <p style="margin:0 0 12px" class="muted">You scored <strong>${score}</strong> out of <strong>${TOTAL}</strong> (${pct}%).</p>
+      <div class="actions">
+        <button class="next" onclick="location.reload()" style="display:inline-block">Try another shuffled run</button>
+      </div>
+    </div>`;
+  els.counter.textContent = 'Complete';
+}
+
+// Kickoff
+render();
 </script>
 </body>
 </html>
