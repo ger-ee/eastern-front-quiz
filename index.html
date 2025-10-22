@@ -4,26 +4,22 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Eastern Front WWII Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Pacifico&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg1:#0f0f12; --bg2:#191a1f; --accent:#ff5544; --muted:#a9a9b2; --ok:#25a45a; --bad:#c83838;
-  }
-  @keyframes float {
-    0%{transform:translateY(0)} 50%{transform:translateY(-6px)} 100%{transform:translateY(0)}
-  }
-  body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#f5f6f8; background: radial-gradient(1200px 700px at 20% -10%, #2b2d33 0%, transparent 70%),
-           radial-gradient(900px 600px at 120% 10%, #2a1a1a55 0%, transparent 70%),
-           linear-gradient(160deg, var(--bg1), var(--bg2));
-    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
-  .quiz{width: min(860px, 92vw); background: #121317e6; backdrop-filter: blur(6px);
-        border:1px solid #2b2d33; border-radius: 16px; box-shadow: 0 12px 40px #0008; overflow:hidden}
+  :root{ --bg1:#0f0f12; --bg2:#191a1f; --accent:#ff5544; --muted:#a9a9b2; --ok:#25a45a; --bad:#c83838; }
+  @keyframes float { 0%{transform:translateY(0)} 50%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
+  body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#f5f6f8; background: radial-gradient(1200px 700px at 20% -10%, #2b2d33 0%, transparent 70%), radial-gradient(900px 600px at 120% 10%, #2a1a1a55 0%, transparent 70%), linear-gradient(160deg, var(--bg1), var(--bg2)); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .quiz{width: min(920px, 94vw); background: #121317e6; backdrop-filter: blur(6px); border:1px solid #2b2d33; border-radius: 16px; box-shadow: 0 12px 40px #0008; overflow:hidden}
   header{padding:18px 22px; border-bottom:1px solid #24262c; display:flex; gap:14px; align-items:center}
-  .logo{width:12px; height:12px; border-radius:2px; background:var(--accent); box-shadow:0 0 24px var(--accent)}
+  .logo-dot{width:12px; height:12px; border-radius:2px; background:var(--accent); box-shadow:0 0 24px var(--accent)}
   header h1{font-size:18px; margin:0; letter-spacing:.3px}
   .muted{color:var(--muted)}
   .progress{height:8px; background:#1b1c22;}
   .bar{height:100%; width:0%; background:linear-gradient(90deg, #ff7a66, var(--accent)); transition: width .35s ease}
   main{padding:24px;}
+  .brand{display:flex; justify-content:center; margin:6px 0 16px}
+  .brand svg{max-width:380px; width:70%; height:auto; filter: drop-shadow(0 6px 18px #0006)}
+  .subtitle{font-size:14px; text-align:center; margin:-6px 0 18px; color:var(--muted)}
   .card{padding:22px; border:1px solid #262830; border-radius:14px; background:#161821; animation: float 6s ease-in-out infinite}
   .q{font-size:20px; line-height:1.4; margin:0 0 16px}
   .answers{display:grid; gap:10px}
@@ -44,13 +40,41 @@
 <body>
   <div class="quiz" id="app">
     <header>
-      <div class="logo"></div>
-      <h1>Eastern Front — Interactive Quiz</h1>
+      <div class="logo-dot"></div>
+      <h1>The Blind Spot — Quiz</h1>
       <div style="flex:1"></div>
       <div class="chip" id="counter">Question 1/15</div>
     </header>
     <div class="progress"><div class="bar" id="bar"></div></div>
     <main>
+      <!-- Branded lockup in the style of your logo -->
+      <div class="brand" aria-label="The Blind Spot Quiz">
+        <svg viewBox="0 0 760 420" role="img" aria-labelledby="tbslbl">
+          <title id="tbslbl">The Blind Spot — quiz</title>
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#f7a3b8"/>
+              <stop offset="50%" stop-color="#c6b6d9"/>
+              <stop offset="100%" stop-color="#8ec5e6"/>
+            </linearGradient>
+          </defs>
+          <!-- frame -->
+          <rect x="70" y="30" width="560" height="300" fill="none" stroke="url(#g)" stroke-width="18" rx="2"/>
+          <!-- stacked title -->
+          <g fill="url(#g)" font-family="Montserrat, Arial, sans-serif" font-weight="900" font-size="88" letter-spacing="2">
+            <text x="100" y="110">THE</text>
+            <text x="100" y="190">BLIND</text>
+            <text x="100" y="270">SPOT.</text>
+          </g>
+          <!-- script "quiz" -->
+          <g fill="url(#g)">
+            <text x="92" y="380" font-family="Pacifico, cursive" font-size="88">quiz</text>
+            <path d="M92 392 C 220 420, 420 420, 528 392" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <div class="subtitle">Eastern Front — World War II</div>
+
       <div class="card">
         <p class="q" id="question">Loading…</p>
         <div class="answers" id="answers"></div>
@@ -103,7 +127,7 @@ const els = {
 function render(){
   els.fb.textContent='';
   els.next.style.display='none';
-  const {q, a, c} = questions[current];
+  const {q, a} = questions[current];
   els.q.textContent = q;
   els.a.innerHTML='';
   const order = shuffle(a.map((text, i)=>({text, i})));
@@ -128,7 +152,6 @@ function select(selectedIndex, clicked){
     score++;
   } else {
     clicked.classList.add('wrong');
-    // highlight the correct one by matching original index
     const correctBtn = buttons.find(b=> b.textContent === questions[current].a[correct]);
     if(correctBtn) correctBtn.classList.add('correct');
     els.fb.textContent = 'Wrong';
@@ -140,19 +163,19 @@ function select(selectedIndex, clicked){
 
 els.next.addEventListener('click', ()=>{
   current++;
-  if(current < TOTAL){
-    render();
-  } else {
-    end();
-  }
+  if(current < TOTAL){ render(); } else { end(); }
 });
 
 function end(){
   const pct = Math.round((score/TOTAL)*100);
   document.querySelector('main').innerHTML = `
-    <div class="card">
+    <div class="brand" aria-label="The Blind Spot Quiz">
+      ${document.querySelector('.brand').innerHTML}
+    </div>
+    <div class="subtitle">Eastern Front — World War II</div>
+    <div class=card>
       <h2 style="margin:0 0 8px">Finished!</h2>
-      <p style="margin:0 0 12px" class="muted">You scored <strong>${score}</strong> out of <strong>${TOTAL}</strong> (${pct}%).</p>
+      <p class="muted" style="margin:0 0 12px">You scored <strong>${score}</strong> out of <strong>${TOTAL}</strong> (${pct}%).</p>
       <div class="actions">
         <button class="next" onclick="location.reload()" style="display:inline-block">Try another shuffled run</button>
       </div>
@@ -160,7 +183,6 @@ function end(){
   els.counter.textContent = 'Complete';
 }
 
-// Kickoff
 render();
 </script>
 </body>
