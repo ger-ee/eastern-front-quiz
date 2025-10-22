@@ -51,7 +51,8 @@ header {
 }
 .subtitle {
   margin-top: 10px;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
   letter-spacing: 0.5px;
   color: var(--muted);
 }
@@ -72,6 +73,7 @@ main {
   width: 90%;
   text-align: center;
   box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  animation: fadeIn 1s ease;
 }
 .intro h2 {
   font-family: 'Montserrat', sans-serif;
