@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eastern Front WWII Quiz</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #f0f0f0;
+    padding: 20px;
+    line-height: 1.6;
+  }
+  .quiz-container {
+    max-width: 700px;
+    margin: 0 auto;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(255,255,255,0.1);
+  }
+  h1 {
+    text-align: center;
+    color: #ff5555;
+  }
+  .question {
+    margin-bottom: 20px;
+  }
+  .answers button {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #2c2c2c;
+    color: #f0f0f0;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .answers button:hover {
+    background: #3a3a3a;
+  }
+  .correct {
+    background-color: #228b22 !important;
+  }
+  .wrong {
+    background-color: #b22222 !important;
+  }
+  #next-btn {
+    background: #ff5555;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: none;
+    margin-top: 20px;
+  }
+  #result {
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="quiz-container">
+  <h1>Eastern Front WWII Quiz</h1>
+  <div id="quiz"></div>
+  <button id="next-btn">Next Question</button>
+  <div id="result"></div>
+</div>
+<script>
+const quizData = [
+  {q: "What was Operation Barbarossa?", a: ["The Soviet invasion of Poland", "The German invasion of the Soviet Union", "The Allied invasion of France", "The Soviet counteroffensive at Stalingrad"], c: 1},
+  {q: "Which city endured a 900-day siege by German forces?", a: ["Stalingrad", "Leningrad", "Moscow", "Kiev"], c: 1},
+  {q: "Who commanded the German Army Group Center during the initial phase of Operation Barbarossa?", a: ["Guderian", "Paulus", "Bock", "Rommel"], c: 2},
+  {q: "When did Operation Barbarossa begin?", a: ["June 22, 1941", "September 1, 1939", "December 7, 1941", "May 10, 1940"], c: 0},
+  {q: "What was the turning point battle on the Eastern Front?", a: ["Moscow", "Kursk", "Stalingrad", "Smolensk"], c: 2},
+  {q: "Which Soviet general led the defense and later counteroffensive at Stalingrad?", a: ["Rokossovsky", "Chuikov", "Zhukov", "Timoshenko"], c: 1},
+  {q: "What was the name of the massive German tank offensive repelled by the Soviets in 1943?", a: ["Operation Bagration", "Operation Citadel", "Operation Typhoon", "Operation Blue"], c: 1},
+  {q: "Which operation liberated Belarus in 1944?", a: ["Operation Typhoon", "Operation Overlord", "Operation Bagration", "Operation Torch"], c: 2},
+  {q: "What city was renamed Volgograd after the war?", a: ["Leningrad", "Kursk", "Stalingrad", "Kharkov"], c: 2},
+  {q: "Which conference solidified postwar Soviet control over Eastern Europe?", a: ["Tehran", "Yalta", "Potsdam", "Moscow"], c: 1}
+];
+
+let current = 0;
+let score = 0;
+const quiz = document.getElementById('quiz');
+const nextBtn = document.getElementById('next-btn');
+const result = document.getElementById('result');
+
+function loadQuestion() {
+  result.innerHTML = '';
+  nextBtn.style.display = 'none';
+  const q = quizData[current];
+  quiz.innerHTML = `<div class='question'><h3>${q.q}</h3></div>`;
+  const answersDiv = document.createElement('div');
+  answersDiv.className = 'answers';
+  q.a.forEach((answer, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = answer;
+    btn.onclick = () => selectAnswer(i, btn);
+    answersDiv.appendChild(btn);
+  });
+  quiz.appendChild(answersDiv);
+}
+
+function selectAnswer(selected, btn) {
+  const correct = quizData[current].c;
+  const buttons = document.querySelectorAll('.answers button');
+  buttons.forEach(b => b.disabled = true);
+  if (selected === correct) {
+    btn.classList.add('correct');
+    result.textContent = '✅ Correct!';
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    buttons[correct].classList.add('correct');
+    result.textContent = '❌ Wrong.';
+  }
+  nextBtn.style.display = 'block';
+}
+
+nextBtn.onclick = () => {
+  current++;
+  if (current < quizData.length) {
+    loadQuestion();
+  } else {
+    quiz.innerHTML = `<h3>You scored ${score} / ${quizData.length}</h3>`;
+    nextBtn.style.display = 'none';
+    result.textContent = '';
+  }
+};
+
+loadQuestion();
+</script>
+</body>
+</html>
