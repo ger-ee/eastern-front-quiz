@@ -1,208 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Blind Spot — Eastern Front Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg1:#0e0f14; --bg2:#13141a; --panel:#11131a;
-    --glass:#161a22ee; --line:#262a36; --muted:#a7a9b4;
-    --grad-a:#f7a3b8; --grad-b:#8ec5e6; --accent:#ff6b6b;
-    --ok:#29b36a; --bad:#d04d4d;
-  }
-  /* Vibe: moody neon + glass */
-  html,body{height:100%}
-  body{margin:0; font-family:Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#f3f6fa;
-       background:
-        radial-gradient(900px 600px at 15% -10%, #2a2d38 0%, transparent 65%),
-        radial-gradient(700px 500px at 110% 0%, #2d1b1b66 0%, transparent 65%),
-        linear-gradient(160deg, var(--bg1), var(--bg2));
-       display:flex; align-items:center; justify-content:center; padding:28px}
-  .shell{width:min(980px,96vw); background:var(--glass); backdrop-filter: blur(8px);
-         border:1px solid #262a36; border-radius:18px; box-shadow:0 18px 60px #0009; overflow:hidden}
-  header{display:flex; align-items:center; gap:14px; padding:18px 22px; border-bottom:1px solid #22262f}
-  .dot{width:12px; height:12px; border-radius:3px; background:var(--accent); box-shadow:0 0 18px var(--accent)}
-  header h1{font-size:18px; margin:0; letter-spacing:.3px}
-  .chip{margin-left:auto; font-size:12px; color:var(--muted); border:1px solid #303544; padding:6px 10px; border-radius:999px}
-  .progress{height:8px; background:#141720;}
-  .bar{height:100%; width:0%; background:linear-gradient(90deg, var(--grad-a), var(--grad-b)); transition:width .35s ease}
-  main{padding:22px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Blind Spot — Quiz</title>
 
-  /* Brand lockup */
-  .brand{display:flex; justify-content:center; margin:6px 0 18px}
-  .brand svg{max-width:400px; width:70%; height:auto; filter: drop-shadow(0 6px 22px #0006)}
-  .subtitle{font-size:14px; text-align:center; margin:-6px 0 18px; color:var(--muted)}
+  <!-- FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  /* Panels */
-  .panel{padding:22px; border:1px solid #262a36; border-radius:16px; background:#0f121a; box-shadow: inset 0 1px 0 #1d2130}
-  .q{font-size:22px; line-height:1.35; margin:0 0 16px}
-  .answers{display:grid; gap:12px}
-  .btn{position:relative; padding:14px 16px; text-align:left; color:#e6e8ee; background:linear-gradient(180deg,#171a23,#12151d);
-       border:1px solid #2b3040; border-radius:14px; cursor:pointer; transition:transform .05s ease, border-color .2s, box-shadow .2s}
-  .btn::before{content:""; position:absolute; inset:-1px; border-radius:14px; padding:1px; background:linear-gradient(90deg,#2b3040, #3b4052); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-               -webkit-mask-composite: xor; mask-composite: exclude; opacity:.5}
-  .btn:hover{box-shadow:0 6px 18px #0006; border-color:#3a4156}
-  .btn:active{transform:scale(.995)}
-  .btn[disabled]{opacity:.8; cursor:default}
-  .btn.correct{background:linear-gradient(180deg,#0f2217,#0c1a12); border-color:#1d7a46; color:#cfeee0}
-  .btn.wrong{background:linear-gradient(180deg,#261414,#1b1111); border-color:#8a3333; color:#ffd9d9}
+  <!-- STYLES -->
+  <link rel="stylesheet" href="css/style.css">
 
-  .feedback{display:flex; align-items:center; gap:8px; margin:12px 2px 0; min-height:28px; font-weight:700}
-  .ico{width:18px; height:18px}
-  .actions{display:flex; justify-content:flex-end; gap:12px; margin-top:18px}
-  .next{background:linear-gradient(90deg, var(--grad-a), var(--grad-b)); color:#0f1220; font-weight:800; border:none; padding:12px 16px; border-radius:12px; cursor:pointer; display:none}
-
-  .footer{padding:16px 22px; border-top:1px solid #22262f; display:flex; justify-content:space-between; align-items:center}
-  .score{font-weight:800}
-
-  /* Start screen */
-  .center{display:flex; align-items:center; justify-content:center; text-align:center; flex-direction:column; gap:14px; padding:40px 18px}
-  .start{background:linear-gradient(90deg, var(--grad-a), var(--grad-b)); color:#0f1220; font-weight:900; letter-spacing:.2px; border:none; padding:14px 18px; border-radius:14px; cursor:pointer}
-</style>
+  <!-- META -->
+  <link rel="icon" href="assets/quiz_logo.png" type="image/png">
+  <meta property="og:title" content="The Blind Spot — Quiz">
+  <meta property="og:description" content="Test your historical insight with The Blind Spot's Eastern Front Quiz.">
+  <meta property="og:image" content="https://ger-ee.github.io/eastern-front-quiz/assets/quiz_logo.png">
+  <meta name="theme-color" content="#0e0f14">
 </head>
+
 <body>
-  <div class="shell" id="app">
+  <div class="quiz-shell">
     <header>
-      <div class="dot"></div>
-      <h1>The Blind Spot — Quiz</h1>
-      <div class="chip" id="counter">Ready</div>
-    </header>
-    <div class="progress"><div class="bar" id="bar"></div></div>
-    <main id="main">
-      <div class="brand" aria-label="The Blind Spot Quiz">
-        <svg viewBox="0 0 760 420" role="img" aria-labelledby="tbslbl">
-          <title id="tbslbl">The Blind Spot — quiz</title>
-          <defs>
-            <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="var(--grad-a)"/>
-              <stop offset="100%" stop-color="var(--grad-b)"/>
-            </linearGradient>
-          </defs>
-          <rect x="70" y="30" width="560" height="300" fill="none" stroke="url(#g)" stroke-width="18" rx="2"/>
-          <g fill="url(#g)" font-family="Montserrat, Arial, sans-serif" font-weight="900" font-size="88" letter-spacing="2">
-            <text x="100" y="110">THE</text>
-            <text x="100" y="190">BLIND</text>
-            <text x="100" y="270">SPOT.</text>
-          </g>
-          <g fill="url(#g)">
-            <text x="92" y="380" font-family="Pacifico, cursive" font-size="88">quiz</text>
-            <path d="M92 392 C 220 420, 420 420, 528 392" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
-          </g>
-        </svg>
+      <div class="brand">
+        <img src="assets/quiz_logo.png" alt="The Blind Spot Quiz Logo" class="logo">
       </div>
-      <div class="subtitle">Eastern Front — World War II</div>
-      <div class="center">
-        <div class="panel" style="max-width:680px">
-          <p class="q" style="margin:0 0 12px">15 questions. Answers shuffle. Instant feedback. Good luck.</p>
-          <button class="start" id="start">Start quiz</button>
-        </div>
+      <p class="subtitle">Eastern Front — World War II</p>
+    </header>
+
+    <main id="quiz">
+      <div class="intro fade-in">
+        <h2>15 questions. Randomized. Instant feedback.</h2>
+        <button id="startBtn">Start Quiz</button>
       </div>
     </main>
-    <div class="footer"><span class="muted">Shuffles each run</span><span class="score" id="score">0 correct</span></div>
+
+    <footer>
+      <p>© 2025 The Blind Spot</p>
+    </footer>
   </div>
 
-<script>
-// Pool of 15+ questions
-const POOL = [
-  {q:"What was Operation Barbarossa?", a:["The Soviet invasion of Poland","The German invasion of the Soviet Union","The Allied invasion of France","The Soviet counteroffensive at Stalingrad"], c:1},
-  {q:"Which city endured a ~900‑day siege?", a:["Stalingrad","Leningrad","Moscow","Kiev"], c:1},
-  {q:"Who commanded German Army Group Center at the start of Barbarossa?", a:["Heinz Guderian","Fedor von Bock","Erich von Manstein","Erwin Rommel"], c:1},
-  {q:"When did Barbarossa begin?", a:["June 22, 1941","Sept 1, 1939","Dec 7, 1941","May 10, 1940"], c:0},
-  {q:"Turning point widely identified on the Eastern Front?", a:["Moscow","Kursk","Stalingrad","Smolensk"], c:2},
-  {q:"Soviet general famed for street‑by‑street defense of Stalingrad?", a:["Vasily Chuikov","Georgy Zhukov","Konstantin Rokossovsky","Semyon Timoshenko"], c:0},
-  {q:"Name of the 1943 German offensive at Kursk?", a:["Operation Citadel","Operation Typhoon","Operation Blue","Operation Bagration"], c:0},
-  {q:"Which operation liberated Belarus in 1944?", a:["Overlord","Typhoon","Torch","Bagration"], c:3},
-  {q:"Which city was renamed Volgograd after the war?", a:["Leningrad","Kursk","Stalingrad","Kharkov"], c:2},
-  {q:"Which conference most shaped postwar Soviet influence in Eastern Europe?", a:["Tehran","Yalta","Potsdam","Moscow 1944"], c:1},
-  {q:"German plan to capture Moscow in 1941 was called…", a:["Operation Typhoon","Operation Sea Lion","Operation Uranus","Operation Mars"], c:0},
-  {q:"Soviet encirclement that trapped the German 6th Army was…", a:["Operation Uranus","Operation Mars","Operation Saturn","Operation Torch"], c:0},
-  {q:"Largest tank clashes near Prokhorovka occurred during…", a:["Operation Citadel","Operation Blue","Operation Typhoon","Operation Market Garden"], c:0},
-  {q:"Order No. 227 (‘Not one step back!’) was issued in…", a:["1941","1942","1943","1944"], c:1},
-  {q:"Lend‑Lease item most critical to Soviet mobility was…", a:["Tanks","Rifles","Trucks","Submarines"], c:2}
-];
-const TOTAL = 15;
-const shuffle = (arr) => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
-
-let questions = [], current = 0, score = 0;
-const els = {
-  main: document.getElementById('main'),
-  bar: document.getElementById('bar'),
-  counter: document.getElementById('counter'),
-  score: document.getElementById('score'),
-  start: document.getElementById('start')
-};
-
-if(els.start){ els.start.addEventListener('click', start); }
-
-function start(){
-  questions = shuffle([...POOL]).slice(0,TOTAL);
-  current = 0; score = 0;
-  els.score.textContent = '0 correct';
-  els.bar.style.width = '0%';
-  render();
-}
-
-function render(){
-  const {q, a} = questions[current];
-  const order = shuffle(a.map((text, i)=>({text, i})));
-  els.main.innerHTML = `
-    <div class="brand" aria-label="The Blind Spot Quiz">${document.querySelector('.brand').innerHTML}</div>
-    <div class="subtitle">Eastern Front — World War II</div>
-    <div class="panel">
-      <p class="q">${q}</p>
-      <div class="answers">${order.map(({text,i})=>`<button class=btn data-i="${i}">${text}</button>`).join('')}</div>
-      <div class="feedback" id="fb"></div>
-      <div class="actions"><button class="next" id="next">Next</button></div>
-    </div>`;
-  els.counter.textContent = `Question ${current+1}/${TOTAL}`;
-  document.querySelectorAll('.btn').forEach(btn=> btn.onclick = () => select(+btn.dataset.i, btn));
-  document.getElementById('next').onclick = next;
-}
-
-function select(idx, btn){
-  const correct = questions[current].c;
-  const buttons = Array.from(document.querySelectorAll('.btn'));
-  buttons.forEach(b=> b.disabled = true);
-  const fb = document.getElementById('fb');
-  if(idx === correct){
-    btn.classList.add('correct');
-    fb.innerHTML = icon('ok') + ' Correct';
-    score++; els.score.textContent = `${score} correct`;
-  } else {
-    btn.classList.add('wrong');
-    const cBtn = buttons.find(b=> b.textContent === questions[current].a[correct]);
-    if(cBtn) cBtn.classList.add('correct');
-    fb.innerHTML = icon('bad') + ' Wrong';
-  }
-  document.getElementById('next').style.display = 'inline-block';
-  els.bar.style.width = `${(current+1)/TOTAL*100}%`;
-}
-
-function next(){
-  current++;
-  if(current < TOTAL) render(); else end();
-}
-
-function end(){
-  const pct = Math.round((score/TOTAL)*100);
-  els.main.innerHTML = `
-    <div class="brand">${document.querySelector('.brand').innerHTML}</div>
-    <div class="subtitle">Eastern Front — World War II</div>
-    <div class="panel" style="text-align:center">
-      <h2 style="margin:4px 0 8px">Finished!</h2>
-      <p class="muted" style="margin:0 0 16px">You scored <strong>${score}</strong> / <strong>${TOTAL}</strong> (${pct}%).</p>
-      <button class="start" onclick="start()">Play again (shuffled)</button>
-    </div>`;
-  els.counter.textContent = 'Complete';
-}
-
-function icon(type){
-  return type==='ok'
-    ? '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#29b36a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-    : '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#d04d4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
-}
-</script>
+  <script src="js/main.js"></script>
 </body>
 </html>
